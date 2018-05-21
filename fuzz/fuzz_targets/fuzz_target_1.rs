@@ -9,7 +9,7 @@ use insta::Error;
 
 fuzz_target!(|data: &[u8]| {
   match insta::fuzz(data) {
-    Ok(_) => panic!("bzzt"),
+    Ok(result) => panic!(format!("bzzt: {}", result)),
     Err(Error::Jpeg(_err)) => print!("J"),
     Err(Error::FormatMismatch) => print!("F"),
     Err(Error::MetricMismatch) => print!("M"),

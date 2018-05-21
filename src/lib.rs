@@ -8,7 +8,7 @@ pub enum Error {
   MetricMismatch,
 }
 
-pub fn fuzz(data: impl Read) -> Result<(), Error> {
+pub fn fuzz(data: impl Read) -> Result<f64, Error> {
   let mut decoder = jpeg::Decoder::new(BufReader::new(data));
   match decoder.read_info() {
     Ok(_) => {}
@@ -32,7 +32,7 @@ pub fn fuzz(data: impl Read) -> Result<(), Error> {
   }
   let average: f64 = total as f64 / size as f64;
   if average < 100.0 && average > 90.0 {
-    Ok(())
+    Ok(average)
   } else {
     Err(Error::MetricMismatch)
   }

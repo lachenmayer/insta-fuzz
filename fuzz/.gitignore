@@ -1,2 +1,5 @@
 target
-corpus
+corpus/*
+!corpus/fuzz_target_1
+corpus/fuzz_target_1/*
+!corpus/fuzz_target_1/_*.jpg
