@@ -2,6 +2,8 @@
 
 **experiments in progress.**
 
+![](corpus.gif)
+
 _Fuzzers_ are tools that generate random data to trigger program crashes, usually used to test security-critical code. Some of the most security-critical code is image decoding - random images you see on the web should not crash your browser, or even worse, allow extracting sensitive data.
 
 This project turns the fuzzing objective on its head: rather than treating a crash as a failure, we treat a crash as a *success*.
