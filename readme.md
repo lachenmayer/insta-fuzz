@@ -60,3 +60,22 @@ aim: generate a bigger image
 ## experiment 3: more red pixels than others
 
 aim: modify the success metric to generate more visually interesting output
+
+- added pixel format to format check - needs to be RGB24
+- changed iteration to iterate over pixels in chunks of 3
+- defined a "red" pixel as a pixel where r > g && r > b
+- metric: percentage of red pixels is >50%
+- generated
+  - `fuzz/artifacts/fuzz_target_1/crash-228690d1ed9d68ff6bde496469048ddbd4519834`
+	- `fuzz/artifacts/fuzz_target_1/crash-30002adeb27d35d395fb0a2cd04d1ccc12450786`
+	- `fuzz/artifacts/fuzz_target_1/crash-33c6aa9f30c008341a12b80430a9159c08176c7a`
+	- `fuzz/artifacts/fuzz_target_1/crash-ac259af53c81bcb138b6fcbab2ea6b061f16298d`
+- result: only first 3 blocks have some kind of value in them - at least they are red of sorts
+- rest of image is #808080 grey
+- changed red measurement: r > 50 && r >= 2 * g && r >= 2 * b
+  - got overflows... need to cast to u16
+  - that took way longer than expected, giving up - suspect red check is wrong somehow
+  - added a debug log, red check looks ok, start again
+- finished: `crash-083b80bb8a0a4dc80e56efc5466873f7d7bfb5b7`
+  - metric: `0.5654296875`
+  - but only 3 blocks are non-grey...
