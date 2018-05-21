@@ -1,17 +1,30 @@
 extern crate jpeg_decoder as jpeg;
 
-use std::error::Error;
 use std::io::{BufReader, Read};
-pub fn fuzz(data: impl Read) -> Result<(), impl Error> {
+
+pub enum Error {
+  Jpeg(jpeg::Error),
+  FormatMismatch,
+  MetricMismatch,
+}
+
+pub fn fuzz(data: impl Read) -> Result<(), Error> {
   let mut decoder = jpeg::Decoder::new(BufReader::new(data));
-  decoder.read_info()?;
-  let info = decoder
-    .info()
-    .ok_or_else(|| jpeg::Error::Format("no info".to_string()))?;
-  if info.width != 32 && info.height != 32 {
-    return Err(jpeg::Error::Format("not right size".to_string()));
+  match decoder.read_info() {
+    Ok(_) => {}
+    Err(err) => return Err(Error::Jpeg(err)),
   };
-  let pixels = decoder.decode()?;
+  let info = match decoder.info() {
+    Some(info) => info,
+    None => return Err(Error::FormatMismatch),
+  };
+  if info.width != 64 && info.height != 64 {
+    return Err(Error::FormatMismatch);
+  };
+  let pixels = match decoder.decode() {
+    Ok(pixels) => pixels,
+    Err(err) => return Err(Error::Jpeg(err)),
+  };
   let mut total: u64 = 0;
   let size = pixels.len();
   for pixel in pixels {
@@ -21,6 +34,6 @@ pub fn fuzz(data: impl Read) -> Result<(), impl Error> {
   if average < 100.0 && average > 90.0 {
     Ok(())
   } else {
-    Err(jpeg::Error::Format("not the right image".to_string()))
+    Err(Error::MetricMismatch)
   }
 }
